@@ -1,6 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../style.css';
 
+// Sample data for our music library
+const sampleArtists = [
+  { id: 1, name: "Tamerlan Alena", followers: "2.1M", cover: "https://placehold.co/200x200/ff0000/white?text=TA" },
+  { id: 2, name: "Oxxxymiron", followers: "1.8M", cover: "https://placehold.co/200x200/ff0000/white?text=OX" },
+  { id: 3, name: "IC3PEAK", followers: "1.5M", cover: "https://placehold.co/200x200/ff0000/white?text=IC" },
+  { id: 4, name: "Scally Milano", followers: "980K", cover: "https://placehold.co/200x200/ff0000/white?text=SM" }
+];
+
+const sampleAlbums = [
+  { id: 1, title: "Midnight Dreams", artist: "Tamerlan Alena", year: 2023, cover: "https://placehold.co/200x200/ff0000/white?text=MD", tracks: 12 },
+  { id: 2, title: "Cyber Poetry", artist: "IC3PEAK", year: 2022, cover: "https://placehold.co/200x200/ff0000/white?text=CP", tracks: 10 },
+  { id: 3, title: "Urban Legends", artist: "Oxxxymiron", year: 2023, cover: "https://placehold.co/200x200/ff0000/white?text=UL", tracks: 14 },
+  { id: 4, title: "Neon Nights", artist: "Scally Milano", year: 2021, cover: "https://placehold.co/200x200/ff0000/white?text=NN", tracks: 8 }
+];
+
 export const Menyu = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -8,7 +23,10 @@ export const Menyu = () => {
   const [volume, setVolume] = useState(1);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [activeView, setActiveView] = useState('home');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [selectedArtist, setSelectedArtist] = useState(null);
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
   
   const audioRef = useRef(null);
   
@@ -16,85 +34,66 @@ export const Menyu = () => {
   const songs = [
     {
       id: 1,
-      title: "Blinding Lights",
-      artist: "The Weeknd",
-      album: "After Hours",
-      duration: "3:20",
-      cover: "https://placehold.co/300x300/1db954/white?text=BL",
+      title: "Midnight City",
+      artist: "Tamerlan Alena",
+      album: "Midnight Dreams",
+      duration: "3:45",
+      cover: "https://placehold.co/300x300/ff0000/white?text=MC",
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
     },
     {
       id: 2,
-      title: "Save Your Tears",
-      artist: "The Weeknd",
-      album: "After Hours",
-      duration: "3:35",
-      cover: "https://placehold.co/300x300/1db954/white?text=SYT",
+      title: "Digital Love",
+      artist: "IC3PEAK",
+      album: "Cyber Poetry",
+      duration: "4:20",
+      cover: "https://placehold.co/300x300/ff0000/white?text=DL",
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
     },
     {
       id: 3,
-      title: "Levitating",
-      artist: "Dua Lipa",
-      album: "Future Nostalgia",
-      duration: "3:23",
-      cover: "https://placehold.co/300x300/1db954/white?text=LEV",
+      title: "Neon Lights",
+      artist: "Oxxxymiron",
+      album: "Urban Legends",
+      duration: "3:15",
+      cover: "https://placehold.co/300x300/ff0000/white?text=NL",
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
     },
     {
       id: 4,
-      title: "Don't Start Now",
-      artist: "Dua Lipa",
-      album: "Future Nostalgia",
-      duration: "3:03",
-      cover: "https://placehold.co/300x300/1db954/white?text=DSN",
+      title: "Urban Jungle",
+      artist: "Scally Milano",
+      album: "Neon Nights",
+      duration: "2:58",
+      cover: "https://placehold.co/300x300/ff0000/white?text=UJ",
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
     },
     {
       id: 5,
-      title: "Stay",
-      artist: "The Kid LAROI, Justin Bieber",
-      album: "F*CK LOVE 3",
-      duration: "2:59",
-      cover: "https://placehold.co/300x300/1db954/white?text=STAY",
+      title: "Electric Dreams",
+      artist: "Tamerlan Alena",
+      album: "Midnight Dreams",
+      duration: "4:10",
+      cover: "https://placehold.co/300x300/ff0000/white?text=ED",
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
     },
     {
       id: 6,
-      title: "Good 4 U",
-      artist: "Olivia Rodrigo",
-      album: "SOUR",
-      duration: "2:58",
-      cover: "https://placehold.co/300x300/1db954/white?text=G4U",
+      title: "Cyber Heart",
+      artist: "IC3PEAK",
+      album: "Cyber Poetry",
+      duration: "3:55",
+      cover: "https://placehold.co/300x300/ff0000/white?text=CH",
       audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
-    },
-    {
-      id: 7,
-      title: "Montero",
-      artist: "Lil Nas X",
-      album: "Montero",
-      duration: "2:17",
-      cover: "https://placehold.co/300x300/1db954/white?text=MON",
-      audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3"
-    },
-    {
-      id: 8,
-      title: "Peaches",
-      artist: "Justin Bieber",
-      album: "Justice",
-      duration: "3:18",
-      cover: "https://placehold.co/300x300/1db954/white?text=PEACH",
-      audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
     }
   ];
 
   // Sample playlists
   const playlists = [
-    { id: 1, name: "Liked Songs", count: 24 },
-    { id: 2, name: "My Playlist #1", count: 15 },
-    { id: 3, name: "Chill Vibes", count: 32 },
-    { id: 4, name: "Workout Mix", count: 18 },
-    { id: 5, name: "Road Trip", count: 27 }
+    { id: 1, name: "Мне нравится", count: 42 },
+    { id: 2, name: "Моя коллекция", count: 28 },
+    { id: 3, name: "Для тренировок", count: 15 },
+    { id: 4, name: "Для дороги", count: 33 }
   ];
 
   useEffect(() => {
@@ -177,63 +176,172 @@ export const Menyu = () => {
     setIsPlaying(true);
   };
 
+  const filteredSongs = songs.filter(song => 
+    song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    song.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    song.album.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const renderHomeView = () => (
     <div className="home-view">
-      <h1>Home</h1>
-      <div className="recently-played">
-        <h2>Recently played</h2>
+      <h1>Главная</h1>
+      
+      <section className="section">
+        <h2>Плейлисты</h2>
         <div className="cards-grid">
-          <div className="card" onClick={() => setActiveView('playlist')}>
-            <img src="https://placehold.co/200x200/1db954/white?text=Recently+Played" alt="Recently Played" />
-            <span>Recently Played</span>
-          </div>
-          <div className="card" onClick={() => setActiveView('playlist')}>
-            <img src="https://placehold.co/200x200/1db954/white?text=Top+Hits" alt="Top Hits" />
-            <span>Top Hits</span>
-          </div>
-          <div className="card" onClick={() => setActiveView('playlist')}>
-            <img src="https://placehold.co/200x200/1db954/white?text=Chill+Mix" alt="Chill Mix" />
-            <span>Chill Mix</span>
-          </div>
-          <div className="card" onClick={() => setActiveView('playlist')}>
-            <img src="https://placehold.co/200x200/1db954/white?text=Rock+Classics" alt="Rock Classics" />
-            <span>Rock Classics</span>
-          </div>
+          {playlists.map(playlist => (
+            <div 
+              key={playlist.id} 
+              className="card playlist-card"
+              onClick={() => setActiveView('playlist')}
+            >
+              <div className="playlist-cover">
+                <div className="cover-art"></div>
+                <div className="cover-art"></div>
+                <div className="cover-art"></div>
+              </div>
+              <div className="card-content">
+                <h3>{playlist.name}</h3>
+                <p>{playlist.count} треков</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      
+      <section className="section">
+        <h2>Недавно слушали</h2>
+        <div className="cards-grid">
+          {songs.slice(0, 4).map(song => (
+            <div 
+              key={song.id} 
+              className="card song-card"
+              onClick={() => handleSongSelect(songs.findIndex(s => s.id === song.id))}
+            >
+              <img src={song.cover} alt={song.title} />
+              <div className="card-content">
+                <h3>{song.title}</h3>
+                <p>{song.artist}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      
+      <section className="section">
+        <h2>Популярные исполнители</h2>
+        <div className="cards-grid">
+          {sampleArtists.map(artist => (
+            <div 
+              key={artist.id} 
+              className="card artist-card"
+              onClick={() => {
+                setSelectedArtist(artist);
+                setActiveView('artist');
+              }}
+            >
+              <img src={artist.cover} alt={artist.name} />
+              <div className="card-content">
+                <h3>{artist.name}</h3>
+                <p>{artist.followers} подписчиков</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+
+  const renderSearchView = () => (
+    <div className="search-view">
+      <h1>Поиск</h1>
+      
+      <div className="search-container">
+        <div className="search-input-wrapper">
+          <span className="search-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="Исполнитель, трек или альбом"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
         </div>
       </div>
       
-      <div className="made-for-you">
-        <h2>Made for you</h2>
-        <div className="cards-grid">
-          <div className="card" onClick={() => setActiveView('playlist')}>
-            <img src="https://placehold.co/200x200/1db954/white?text=Daily+Mix+1" alt="Daily Mix 1" />
-            <span>Daily Mix 1</span>
-          </div>
-          <div className="card" onClick={() => setActiveView('playlist')}>
-            <img src="https://placehold.co/200x200/1db954/white?text=Daily+Mix+2" alt="Daily Mix 2" />
-            <span>Daily Mix 2</span>
-          </div>
-          <div className="card" onClick={() => setActiveView('playlist')}>
-            <img src="https://placehold.co/200x200/1db954/white?text=Release+Radar" alt="Release Radar" />
-            <span>Release Radar</span>
-          </div>
-          <div className="card" onClick={() => setActiveView('playlist')}>
-            <img src="https://placehold.co/200x200/1db954/white?text=Discover+Weekly" alt="Discover Weekly" />
-            <span>Discover Weekly</span>
+      {searchQuery ? (
+        <div className="search-results">
+          <h2>Результаты поиска</h2>
+          <div className="songs-table">
+            {filteredSongs.map((song, index) => (
+              <div 
+                key={song.id} 
+                className="table-row"
+                onClick={() => handleSongSelect(songs.findIndex(s => s.id === song.id))}
+              >
+                <div className="table-cell index">{songs.findIndex(s => s.id === song.id) + 1}</div>
+                <div className="table-cell song-info">
+                  <img src={song.cover} alt={song.title} className="song-cover" />
+                  <div>
+                    <div className="song-title">{song.title}</div>
+                    <div className="song-artist">{song.artist}</div>
+                  </div>
+                </div>
+                <div className="table-cell album">{song.album}</div>
+                <div className="table-cell duration">{song.duration}</div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="section">
+            <h2>Популярные запросы</h2>
+            <div className="popular-searches">
+              <div className="search-suggestion">Tamerlan Alena</div>
+              <div className="search-suggestion">IC3PEAK</div>
+              <div className="search-suggestion">Midnight Dreams</div>
+              <div className="search-suggestion">Cyber Poetry</div>
+            </div>
+          </div>
+          
+          <div className="section">
+            <h2>Популярные плейлисты</h2>
+            <div className="cards-grid">
+              <div className="card large-card" onClick={() => setActiveView('playlist')}>
+                <div className="large-card-content">
+                  <h3>Топ чарта</h3>
+                  <p>Еженедельный подборка хитов</p>
+                </div>
+              </div>
+              <div className="card large-card" onClick={() => setActiveView('playlist')}>
+                <div className="large-card-content">
+                  <h3>Новинки</h3>
+                  <p>Свежие релизы</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 
   const renderPlaylistView = () => (
     <div className="playlist-view">
       <div className="playlist-header">
-        <img src={songs[currentSongIndex].cover} alt="Playlist" className="playlist-cover-large" />
+        <div className="playlist-cover-large">
+          <div className="cover-grid">
+            <div className="cover-item"></div>
+            <div className="cover-item"></div>
+            <div className="cover-item"></div>
+            <div className="cover-item"></div>
+          </div>
+        </div>
         <div className="playlist-info">
-          <span>PLAYLIST</span>
-          <h1>My Playlist #1</h1>
-          <p>Created by You • {songs.length} songs</p>
+          <span>ПЛЕЙЛИСТ</span>
+          <h1>Мне нравится</h1>
+          <p>Создано для вас • {songs.length} треков</p>
         </div>
       </div>
       
@@ -241,16 +349,14 @@ export const Menyu = () => {
         <button className="play-button" onClick={togglePlayPause}>
           {isPlaying ? '⏸' : '▶'}
         </button>
-        <button className="heart-button">♡</button>
-        <button className="more-button">⋯</button>
       </div>
       
       <div className="songs-table">
         <div className="table-header">
           <div className="table-cell">#</div>
-          <div className="table-cell">TITLE</div>
-          <div className="table-cell">ALBUM</div>
-          <div className="table-cell">DURATION</div>
+          <div className="table-cell">НАЗВАНИЕ</div>
+          <div className="table-cell">АЛЬБОМ</div>
+          <div className="table-cell">ДЛИТЕЛЬНОСТЬ</div>
         </div>
         {songs.map((song, index) => (
           <div 
@@ -274,40 +380,119 @@ export const Menyu = () => {
     </div>
   );
 
-  const renderBrowseView = () => (
-    <div className="browse-view">
-      <h1>Browse</h1>
-      <div className="categories">
-        <div className="category">
-          <img src="https://placehold.co/300x300/1db954/white?text=Pop" alt="Pop" />
-          <span>Pop</span>
+  const renderArtistView = () => (
+    <div className="artist-view">
+      <div className="artist-header">
+        <img src={selectedArtist?.cover || sampleArtists[0].cover} alt={selectedArtist?.name || sampleArtists[0].name} className="artist-cover" />
+        <div className="artist-info">
+          <span>ИСПОЛНИТЕЛЬ</span>
+          <h1>{selectedArtist?.name || sampleArtists[0].name}</h1>
+          <p>{selectedArtist?.followers || sampleArtists[0].followers} подписчиков</p>
+          <button className="follow-button">Подписаться</button>
         </div>
-        <div className="category">
-          <img src="https://placehold.co/300x300/1db954/white?text=Hip-Hop" alt="Hip-Hop" />
-          <span>Hip-Hop</span>
+      </div>
+      
+      <div className="artist-controls">
+        <button className="play-button" onClick={togglePlayPause}>
+          {isPlaying ? '⏸' : '▶'}
+        </button>
+        <button className="more-button">⋯</button>
+      </div>
+      
+      <div className="section">
+        <h2>Популярные треки</h2>
+        <div className="songs-table">
+          {songs.filter(song => song.artist === (selectedArtist?.name || sampleArtists[0].name)).map((song, index) => (
+            <div 
+              key={song.id} 
+              className={`table-row ${songs.findIndex(s => s.id === song.id) === currentSongIndex ? 'active' : ''}`}
+              onClick={() => handleSongSelect(songs.findIndex(s => s.id === song.id))}
+            >
+              <div className="table-cell index">{index + 1}</div>
+              <div className="table-cell song-info">
+                <img src={song.cover} alt={song.title} className="song-cover" />
+                <div>
+                  <div className="song-title">{song.title}</div>
+                </div>
+              </div>
+              <div className="table-cell album">{song.album}</div>
+              <div className="table-cell duration">{song.duration}</div>
+            </div>
+          ))}
         </div>
-        <div className="category">
-          <img src="https://placehold.co/300x300/1db954/white?text=Rock" alt="Rock" />
-          <span>Rock</span>
-        </div>
-        <div className="category">
-          <img src="https://placehold.co/300x300/1db954/white?text=Jazz" alt="Jazz" />
-          <span>Jazz</span>
-        </div>
-        <div className="category">
-          <img src="https://placehold.co/300x300/1db954/white?text=Electronic" alt="Electronic" />
-          <span>Electronic</span>
-        </div>
-        <div className="category">
-          <img src="https://placehold.co/300x300/1db954/white?text=Classical" alt="Classical" />
-          <span>Classical</span>
+      </div>
+      
+      <div className="section">
+        <h2>Альбомы</h2>
+        <div className="cards-grid">
+          {sampleAlbums.filter(album => album.artist === (selectedArtist?.name || sampleArtists[0].name)).map(album => (
+            <div 
+              key={album.id} 
+              className="card album-card"
+              onClick={() => {
+                setSelectedAlbum(album);
+                setActiveView('album');
+              }}
+            >
+              <img src={album.cover} alt={album.title} />
+              <div className="card-content">
+                <h3>{album.title}</h3>
+                <p>{album.year} • {album.tracks} треков</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 
+  const renderAlbumView = () => (
+    <div className="album-view">
+      <div className="album-header">
+        <img src={selectedAlbum?.cover || sampleAlbums[0].cover} alt={selectedAlbum?.title || sampleAlbums[0].title} className="album-cover-large" />
+        <div className="album-info">
+          <span>АЛЬБОМ</span>
+          <h1>{selectedAlbum?.title || sampleAlbums[0].title}</h1>
+          <p>{selectedAlbum?.artist || sampleAlbums[0].artist}</p>
+          <p>{selectedAlbum?.year || sampleAlbums[0].year} • {selectedAlbum?.tracks || sampleAlbums[0].tracks} треков</p>
+        </div>
+      </div>
+      
+      <div className="album-controls">
+        <button className="play-button" onClick={togglePlayPause}>
+          {isPlaying ? '⏸' : '▶'}
+        </button>
+        <button className="more-button">⋯</button>
+      </div>
+      
+      <div className="songs-table">
+        <div className="table-header">
+          <div className="table-cell">#</div>
+          <div className="table-cell">НАЗВАНИЕ</div>
+          <div className="table-cell">ДЛИТЕЛЬНОСТЬ</div>
+        </div>
+        {songs.filter(song => song.album === (selectedAlbum?.title || sampleAlbums[0].title)).map((song, index) => (
+          <div 
+            key={song.id} 
+            className={`table-row ${songs.findIndex(s => s.id === song.id) === currentSongIndex ? 'active' : ''}`}
+            onClick={() => handleSongSelect(songs.findIndex(s => s.id === song.id))}
+          >
+            <div className="table-cell index">{index + 1}</div>
+            <div className="table-cell song-info">
+              <img src={song.cover} alt={song.title} className="song-cover" />
+              <div>
+                <div className="song-title">{song.title}</div>
+              </div>
+            </div>
+            <div className="table-cell duration">{song.duration}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="spotify-player">
+    <div className="yandex-music-player">
       {/* Audio element */}
       <audio 
         ref={audioRef} 
@@ -318,46 +503,44 @@ export const Menyu = () => {
         {/* Sidebar */}
         <nav className="sidebar">
           <div className="logo">
-            <span className="spotify-logo">🎵</span>
-            <span className="app-name">MusicPlayer</span>
+            <span className="yandex-logo">▶</span>
+            <span className="app-name">Музыка</span>
           </div>
           
           <ul className="nav-menu">
             <li className={activeView === 'home' ? 'active' : ''} onClick={() => setActiveView('home')}>
               <span className="nav-icon">🏠</span>
-              <span>Home</span>
+              <span>Главная</span>
             </li>
             <li className={activeView === 'search' ? 'active' : ''} onClick={() => setActiveView('search')}>
               <span className="nav-icon">🔍</span>
-              <span>Search</span>
+              <span>Поиск</span>
             </li>
             <li className={activeView === 'library' ? 'active' : ''} onClick={() => setActiveView('library')}>
               <span className="nav-icon">📚</span>
-              <span>Your Library</span>
+              <span>Моя коллекция</span>
             </li>
           </ul>
           
           <div className="playlists-section">
             <div className="playlists-header">
-              <span>PLAYLISTS</span>
-              <span className="add-icon">+</span>
+              <span>ПЛЕЙЛИСТЫ</span>
             </div>
             <ul className="playlists">
               {playlists.map(playlist => (
-                <li key={playlist.id} className="playlist-item">
-                  <span className="playlist-icon">📜</span>
+                <li 
+                  key={playlist.id} 
+                  className="playlist-item"
+                  onClick={() => setActiveView('playlist')}
+                >
+                  <span className="playlist-icon">🎵</span>
                   <div className="playlist-info">
                     <div className="playlist-name">{playlist.name}</div>
-                    <div className="playlist-count">{playlist.count} songs</div>
+                    <div className="playlist-count">{playlist.count} треков</div>
                   </div>
                 </li>
               ))}
             </ul>
-          </div>
-          
-          <div className="install-app">
-            <span className="install-icon">⬇️</span>
-            <span>Install App</span>
           </div>
         </nav>
         
@@ -365,12 +548,14 @@ export const Menyu = () => {
         <main className="main-content">
           <div className="content-area">
             {activeView === 'home' && renderHomeView()}
+            {activeView === 'search' && renderSearchView()}
             {activeView === 'playlist' && renderPlaylistView()}
-            {activeView === 'search' && renderBrowseView()}
+            {activeView === 'artist' && renderArtistView()}
+            {activeView === 'album' && renderAlbumView()}
             {activeView === 'library' && (
               <div className="library-view">
-                <h1>Your Library</h1>
-                <p>Library content would go here...</p>
+                <h1>Моя коллекция</h1>
+                <p>Здесь будут отображаться ваши сохраненные треки, альбомы и плейлисты.</p>
               </div>
             )}
           </div>
